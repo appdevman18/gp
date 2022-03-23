@@ -1,0 +1,11 @@
+{
+    "/js/app.js": "/js/app.js",
+    "/js/adminlte.js": "/js/adminlte.js",
+    "/js/jquery.dataTables.js": "/js/jquery.dataTables.js",
+    "/js/dataTables.bootstrap4.min.js": "/js/dataTables.bootstrap4.min.js",
+    "/css/app.css": "/css/app.css",
+    "/css/all.css": "/css/all.css",
+    "/css/dataTables.bootstrap4.min.css": "/css/dataTables.bootstrap4.min.css",
+    "/css/adminlte.css": "/css/adminlte.css",
+    "/images/logo.png": "/images/logo.png"
+}
