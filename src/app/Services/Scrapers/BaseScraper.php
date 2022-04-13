@@ -5,6 +5,7 @@ namespace App\Services\Scrapers;
 use Goutte\Client;
 use Symfony\Component\DomCrawler\Crawler;
 use App\Models\Product;
+use App\Services\Product\ProductService;
 
 class BaseScraper
 {
@@ -12,7 +13,8 @@ class BaseScraper
      * @var Client $client
      * @var Crawler $crawler
      */
-    public $client, $crawler;
+    public $client;
+    public $crawler;
 
     /**
      * BaseScraper constructor.
@@ -24,8 +26,7 @@ class BaseScraper
 
     /**
      * @param string $url
-     *
-     * @return mixed
+     * @return \Illuminate\Http\RedirectResponse|mixed
      * @throws \Exception
      */
     public function chooseScraper(string $url)
@@ -37,7 +38,7 @@ class BaseScraper
 
             $scraper = 'App\Services\Scrapers\\' . ucfirst($store) . 'Scraper';
 
-            if ( !$scraper) {
+            if (!$scraper) {
 
                 throw new \Exception('The non-existent scraper class');
 
@@ -50,35 +51,46 @@ class BaseScraper
 
             return back()->with('error', 'Your link is not supported.');
         }
-        
+
     }
 
     /**
-     * @param $url
-     *
-     * @return \Symfony\Component\DomCrawler\Crawler
+     * @param string $url
+     * @return Crawler
      */
     public function webCrawler(string $url): Crawler
     {
         return $this->crawler = $this->client->request('GET', $url);
     }
 
+    /**
+     * @param string $url
+     * @return string
+     */
     public function getStore(string $url): string
     {
-        $host      = $this->getHost($url);
+        $host = $this->getHost($url);
         $hostParts = explode('.', $host);
-        $store     = $hostParts[0];
+        $store = $hostParts[0];
 
         return $store;
     }
 
+    /**
+     * @param string $element
+     * @return string
+     */
     public function getTitle(string $element): string
-    {   
+    {
         $title = $this->crawler->filter($element)->text();
 
         return $title;
     }
 
+    /**
+     * @param string $element
+     * @return string
+     */
     public function getPrice(string $element): string
     {
         $price = $this->crawler->filter($element)->text();
@@ -89,7 +101,6 @@ class BaseScraper
 
     /**
      * @param string $url
-     *
      * @return string
      */
     private function getHost(string $url): string
@@ -101,7 +112,6 @@ class BaseScraper
 
     /**
      * @param string $str
-     *
      * @return string
      */
     private function getOnlyDigits(string $str): string
@@ -109,9 +119,13 @@ class BaseScraper
         return preg_replace('/[^0-9]/', '', $str);
     }
 
+    /**
+     * @param $store
+     * @return bool
+     */
     private function checkSupportStore($store)
     {
-        $stores = (new Product())->getAllStores();
+        $stores = (new ProductService())->getAllStores();
 
         return in_array($store, $stores);
     }

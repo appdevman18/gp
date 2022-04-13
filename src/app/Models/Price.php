@@ -14,13 +14,16 @@ class Price extends Model
         'value',
         'product_id',
     ];
-    
+
     protected $casts = [
         'created_at' => 'datetime:d.m.Y',
     ];
 
     protected $dates = ['deleted_at'];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function product()
     {
         return $this->belongsTo(Product::class);

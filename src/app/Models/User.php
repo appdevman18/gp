@@ -11,7 +11,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Enums\UserAccount;
 use App\Enums\UserStatus;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable, HasRolesAndPermissions, SoftDeletes;
 
@@ -54,8 +54,12 @@ class User extends Authenticatable
 
     protected $dates = ['deleted_at'];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function products()
     {
         return $this->belongsToMany(Product::class, 'users_products');
     }
+
 }

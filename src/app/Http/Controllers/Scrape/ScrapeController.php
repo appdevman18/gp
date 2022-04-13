@@ -11,7 +11,12 @@ use App\Http\Requests\Scrape\CheckUrlRequest;
 
 class ScrapeController extends Controller
 {
-
+    /**
+     * @param CheckUrlRequest $request
+     * @param BaseScraper $webScraper
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Exception
+     */
     public function checkUrl(CheckUrlRequest $request, BaseScraper $webScraper)
     {
         $url = ($request['url']);
@@ -22,8 +27,13 @@ class ScrapeController extends Controller
         $title = $scraper->title();
         $price = $scraper->price();
         $store = $scraper->getStore($url);
+        if (! auth()->user()->hasRole('admin')){
 
-        return redirect()->route('products.create', [ $title, $price, $store, $url ]);
+            return redirect()->route('profile.products.create', [ $title, $price, $store, $url ]);
+        } else {
+
+            return redirect()->route('products.create', [ $title, $price, $store, $url ]);
+        }
     }
 
 }

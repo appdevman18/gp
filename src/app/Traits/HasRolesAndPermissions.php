@@ -9,7 +9,7 @@ use App\Models\Permission;
 trait HasRolesAndPermissions
 {
     /**
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function roles()
     {
@@ -17,7 +17,7 @@ trait HasRolesAndPermissions
     }
 
     /**
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function permissions()
     {
@@ -25,7 +25,7 @@ trait HasRolesAndPermissions
     }
 
     /**
-     * @param mixed ...$roles
+     * @param ...$roles
      * @return bool
      */
     public function hasRole(...$roles)
@@ -80,7 +80,7 @@ trait HasRolesAndPermissions
     }
 
     /**
-     * @param mixed ...$permissions
+     * @param ...$permissions
      * @return $this
      */
     public function givePermissionsTo(... $permissions)
@@ -92,8 +92,9 @@ trait HasRolesAndPermissions
         $this->permissions()->saveMany($permissions);
         return $this;
     }
+
     /**
-     * @param mixed ...$permissions
+     * @param ...$permissions
      * @return $this
      */
     public function deletePermissions(... $permissions )
@@ -104,14 +105,13 @@ trait HasRolesAndPermissions
     }
 
     /**
-     * @param mixed ...$permissions
-     * @return HasRolesAndPermissions
+     * @param ...$permissions
+     * @return \App\Models\User
      */
     public function refreshPermissions(... $permissions )
     {
         $this->permissions()->detach();
         return $this->givePermissionsTo($permissions);
     }
-
 
 }

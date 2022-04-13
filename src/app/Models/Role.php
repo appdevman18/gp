@@ -10,16 +10,12 @@ class Role extends Model
 {
     use HasFactory;
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function permissions()
     {
         return $this->belongsToMany(Permission::class, 'roles_permissions');
     }
 
-    public function getRolesById()
-    {
-        $permissions = Permission::select('name', 'id')->get();
-
-        return $permissions;
-
-    }
 }

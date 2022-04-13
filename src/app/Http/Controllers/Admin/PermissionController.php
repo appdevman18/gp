@@ -9,62 +9,47 @@ use App\Http\Requests\Permission\PermissionStoreRequest;
 use App\Http\Requests\Permission\PermissionUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Services\Role\RoleService;
+use App\Services\Permission\PermissionService;
 
 class PermissionController extends Controller
 {
+    public function __construct(private RoleService $roleService, private PermissionService $permissionService) {}
+
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function index()
     {
-        $permissions = Permission::orderBy('name', 'asc')->simplePaginate(20);
-        
+        $permissions = $this->permissionService->getPermissionsByNamePaginate();
+
         return view('pages.admin.permission.index', compact('permissions'))->with('i', (request()->input('page', 1) - 1) * 20);
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function create()
     {
-        $roles = Role::select('name', 'id')->get();
-        
+        $roles = $this->roleService->getRolesByNameId();
+
         return view('pages.admin.permission.create', compact('roles'));
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param PermissionStoreRequest $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(PermissionStoreRequest $request)
     {
-        $roles = Role::find($request['roles']);
-
-        $permission = new Permission();
-        $permission->name = $request['name'];
-        $permission->slug = Str::slug($permission->name);
-        $permission->save();
-
-        if (!$permission->save()) {
-            return redirect()->back()->with('error', 'Permission dont created successfully.');
-        }
-
-        $permission->roles()->attach($roles);
+        $this->permissionService->save($request);
 
         return redirect()->route('permissions.index')->with('success', 'Permission created successfully.');
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Role  $role
-     * @return \Illuminate\Http\Response
+     * @param Permission $permission
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function show(Permission $permission)
     {
@@ -72,52 +57,35 @@ class PermissionController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Role  $role
-     * @return \Illuminate\Http\Response
+     * @param Permission $permission
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function edit(Permission $permission)
     {
-        $roles = $permission->getRolesById();
+        $roles = $this->roleService->getRolesByNameId();
 
         return view('pages.admin.permission.edit', compact('permission', 'roles'));
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Role  $role
-     * @return \Illuminate\Http\Response
+     * @param PermissionUpdateRequest $request
+     * @param Permission $permission
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(PermissionUpdateRequest $request, Permission $permission)
     {
-        $roles = Role::find($request['roles']);
-
-        $permission->name = $request['name'];
-        $permission->slug = Str::slug($permission->name);
-        $permission->update();
-
-        if (!$permission->update()) {
-            return redirect()->back()->with('error', 'Permission dont updated successfully.');
-        }
-
-        $permission->roles()->sync($roles);
+        $this->permissionService->update($request, $permission);
 
         return redirect()->route('permissions.index')->with('success', 'Permission updated successfully.');
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Role  $role
-     * @return \Illuminate\Http\Response
+     * @param Permission $permission
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Permission $permission)
     {
-        $permission->roles()->detach();
-        $permission->delete();
+        $this->permissionService->destroy($permission);
 
         return redirect()->route('permissions.index')->with('success', 'Permission deleted.');
     }

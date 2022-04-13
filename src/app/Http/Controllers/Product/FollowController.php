@@ -6,28 +6,33 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Services\Product\Follow;
+use App\Services\Product\ProductService;
 
 
-class FollowController extends Controller
+final class FollowController extends Controller
 {
+    public function __construct(private ProductService $productService) {}
 
     public function followProduct(Request $request, Product $product)
     {
-        $product = $product::findOrFail($request['product_id']);
+        $product = $this->productService->getProductById($request['product_id']);
 
         if ('follow' == $request['follow']) {
-
-            $product->follow();
+            $this->productService->follow($product);
+            if (auth()->user()->hasRole('customer')) {
+                return redirect()->route('profile.products.index')->with('follow', 'You follow successfully.');
+            }
 
             return redirect()->route('products.index')->with('follow', 'You follow successfully.');
-
         } else {
-
-            $product->unFollow();
+            $this->productService->unFollow($product);
+            if (auth()->user()->hasRole('customer')) {
+                return redirect()->route('profile.products.index')->with('follow', 'You follow successfully.');
+            }
 
             return redirect()->route('products.index')->with('unFollow', 'You unfollow successfully.');
         }
 
-    }    
+    }
 
 }

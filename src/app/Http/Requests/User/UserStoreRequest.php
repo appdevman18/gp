@@ -29,14 +29,15 @@ class UserStoreRequest extends FormRequest
     {
         return [
             'name' => ['required', 'max:255'],
-            'email' => ['required', 'unique:users', 'email:rfc,dns'],
+            // 'email' => ['required', 'unique:users', 'email:rfc,dns'],
+            'email' => ['required', 'unique:users'],
             'password' => ['required'],
-            'role' => ['nullable'],
-            'permissions' => ['nullable'],
+            'role' => ['required'],
+            'permissions' => ['required'],
             'account' => [new Enum(UserAccount::class)],
             'status' => [new Enum(UserStatus::class)],
-            'phone' => ['nullable', 'numeric'],
-            'telegram_username' => ['nullable'],
+            'phone' => ['nullable', 'integer'],
+            'telegram_username' => ['nullable', 'string'],
         ];
     }
 }

@@ -1,18 +1,18 @@
-@extends('layouts.profile')
+@extends('layouts.admin')
 
 @section('title', 'All Permission')
 @section('breadcrumbs', 'permissions')
 
 @section('content')
 
-    @include('partials.profile.navbar')
+    @include('partials.admin.navbar')
 
-    @include('partials.profile.sidebar.main')
+    @include('partials.admin.sidebar.main')
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
 
-    @include('partials.profile.content-header')
+    @include('partials.admin.content-header')
 
         <!-- Main content -->
         <section class="content">
@@ -20,11 +20,11 @@
             	<div class="row mb-2">
 			        <div class="col-lg-12 margin-tb">
 			            <div class="pull-right">
-			                <a class="btn btn-dark" href="{{ route('permissions.create') }}">{{ __('Create New Permission') }}</a>
+			                <a class="btn btn-dark" href="{{ route('permissions.create') }}">{{ __('Create') }}</a>
 			            </div>
 			        </div>
 			    </div>
-            	@include('partials.profile.session')
+            	@include('partials.admin.session')
                 <!-- Main row -->
                 @if(0 < $permissions->count())
             	<div class="row">
@@ -55,26 +55,26 @@
 					      		</td>
 					      		<td class="col-3">
 					      			<form action="{{ route('permissions.destroy', $permission->id) }}" method="POST">
-                						<a class="btn btn-info btn-sm" href="{{ route('permissions.show', $permission->id) }}">Show</a>
-                						@role('admin', 'manager')
-                						<a class="btn btn-success btn-sm" href="{{ route('permissions.edit', $permission->id) }}">Edit</a>
-                						@csrf
-                						@method('DELETE')
+                                        @csrf
+                                        @method('DELETE')
+                                        <a class="btn btn-info btn-sm" href="{{ route('permissions.show', $permission->id) }}">Show</a>
+                                        @role('admin', 'manager')
+                                        <a class="btn btn-success btn-sm" href="{{ route('permissions.edit', $permission->id) }}">Edit</a>
                 						<button type="submit" class="btn btn-danger btn-sm">Delete</button>
                 						@endrole
             						</form>
 					      		</td>
 					    	</tr>
 		    			@endforeach
-    			@else
-	        		<tr>
-	        			<td>{{ __('No Permissions') }}</td>
-	        		</tr>
-            	@endif
+                        @else
+                            <tr>
+                                <td>{{ __('No Permissions') }}</td>
+                            </tr>
+                        @endif
 					  	</tbody>
 					</table>
             	</div>
-            	
+
             	<div class="row mt-2">
 			    	{{ $permissions->links() }}
             	</div>
@@ -89,5 +89,5 @@
 	        $('.alert-block').delay(2000).fadeOut();
 	    });
 	</script>
-
+    @include('partials.profile.sidebar.control')
 @endsection

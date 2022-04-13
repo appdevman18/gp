@@ -28,6 +28,7 @@ class ProductStoreRequest extends FormRequest
             'url' => ['required', 'unique:products', 'url'],
             'title' => ['string'],
             'store' => ['string'],
+            'price' => ['integer'],
         ];
     }
 }

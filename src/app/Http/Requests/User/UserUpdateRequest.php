@@ -33,12 +33,12 @@ class UserUpdateRequest extends FormRequest
             'name' => ['required', 'max:255'],
             'email' => ['required', 'email', 'email:rfc,dns', Rule::unique('users')->ignore($this->user)],
             'password' => ['sometimes'],
-            'role' => ['nullable'],
-            'permissions' => ['nullable'],
+            'role' => ['required'],
+            'permissions' => ['required'],
             'account' => [new Enum(UserAccount::class)],
             'status' => [new Enum(UserStatus::class)],
-            'phone' => ['nullable', 'numeric'],
-            'telegram_username' => ['nullable'],
+            'phone' => ['nullable', 'integer'],
+            'telegram_username' => ['nullable', 'string'],
         ];
     }
 }
